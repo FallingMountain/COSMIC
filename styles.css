@@ -153,3 +153,21 @@ background: #6837ff
 	color: #ffbf1f;
 	text-shadow: 0 0 3px #d09000, 0 0 6px #d09000;
 }
+.again {
+	color: #8F00BF;
+	text-shadow: 0 0 1px #7900B2, 0 0 2px #8B00CC, 0 0 3px #9C00E5;
+	background: radial-gradient(closest-side,#D400FF 0,#E900FF 33%,#FF00FF 100%);
+	border: 2px solid #FF0CFF;
+	font-family: Typewriter;
+	font-weight: bold;
+	border-radius: 4px;
+	transition-duration: 0.2s;
+	cursor: pointer;
+	width:32px;
+	height:32px;
+}
+.again:hover {
+	color: #C366FF;
+	text-shadow: 0 0 1px #7900B2, 0 0 2px #8B00CC, 0 0 3px #9C00E5;
+	border: 2px solid #FF0CFF;
+}
