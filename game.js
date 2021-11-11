@@ -19,33 +19,28 @@ var game = {
 		launched: new Decimal(0),
 		time: new Decimal(0),
 	},
-	alpha:{
-		resets:0,
-		shards: new Decimal(0),
-		alphonium: new Decimal(0),
-		totalAlphonium: new Decimal(0),
-		upgrades:[],
-		repeatUps:[0, 0, 0, 0],
-		cost:[new Decimal(10), new Decimal(10), new Decimal(10), new Decimal(10)],
-		costMult:[3, 3, 5, 10],
-		launchMult: new Decimal(0),
-		time: new Decimal(0),
-		boostMac:{
-			
-		},
-		challenges: {
-			
-			
-		},
-		assistants: {
-			
-			
-			
-		},
-	},
+	tech:{
+		milestone: new Decimal(1e10),
+		points: new Decimal (0),
+	}
+	grinder:{
+		tier: 0,
+		tier1:["", "", "", "", ""],
+		upgrades:[0,0,0,0],
+	}
+	booster:{
+		tier: 0,
+		tier1:["", "", "", "", ""],
+		upgrades:[0,0,0,0]
+	}
 	totalMoney:new Decimal(0),
 	
 }
+var error = {
+	alphaUpgrades:[]
+	
+	
+};
 const scientific = new ADNotations.ScientificNotation();
 //A general getElement function.
 function ge(x) {
@@ -55,14 +50,15 @@ function ge(x) {
 function rocketLaunch() {
 	if (game.rocket.active == false && game.rocket.cdActive == false) {
 		game.rocket.active = true;
-		game.rocket.launched = game.rocket.launched.plus(1);
+		game.rocket.launched = game.rocket.launched.plus(game.alpha.launchMult);
 	}
 }
 //Getting the rocket's current height.
 function getHeight() {
 	var height = game.rocket.maxFuel.sub(game.rocket.fuel).times(game.rocket.speed);
 	if (height.gte(1)) height = height.minus(1).times(100).pow(1/1.5).div(100).plus(1);
-	if (height.gte(2)) height = height.minus(2).times(200).pow(1/1.5).div(200).plus(2);
+	if (height.gte(2)) height = height.minus(2).times(100).pow(1/1.5).div(100).plus(2);
+	if (height.gte(4)) height = height.minus(4).times(100).pow(1/1.5).div(100).plus(4);
 	if (height.gte(game.rocket.heightMax)) height = game.rocket.heightMax;
 	return height;
 }
@@ -100,23 +96,28 @@ function upgrade(id) {
 		if (id == 2) game.rocket.cdActive = true;
 	}
 	if (id >= 4 && id <= 7) {
-		if (game.alpha.alphaShards.gte(game.alpha.cost[id]) && game.rocket.active == false) {
-			game.alpha.alphaShards = game.alpha.alphaShards.minus(game.alpha.cost[id-4]);
+		if (game.alpha.shards.gte(game.alpha.cost[id]) && game.rocket.active == false) {
+			game.alpha.shards = game.alpha.shards.minus(game.alpha.cost[id-4]);
 			game.alpha.repeatUps[id-4]++;
 		}
 		initUpgrades();
 	}
 }
 function getUpgradeCost(id) {
-	var costMult = Decimal.add(game.rocket.costMult[id], Decimal.mul(game.rocket.costMultInc[id], game.rocket.upgrade[id]));
-	var cost = Decimal.mul(50, Decimal.pow(costMult, game.rocket.upgrade[id]));
+	if (id >= 0 && id <= 3) {
+		var costMult = Decimal.add(game.rocket.costMult[id], Decimal.mul(game.rocket.costMultInc[id], game.rocket.upgrade[id]));
+		var cost = Decimal.mul(50, Decimal.pow(costMult, game.rocket.upgrade[id]));
+	}
+	if (id >= 4 && id <= 7) {
+		var cost = Decimal.mul(10, Decimal.pow(game.alpha.costMult[id-4], game.alpha.repeatUps[id-4]));
+	}
 	return cost;
 }
 function updateCostMults() {
 	game.rocket.costMult = [1.2, 1.1, 1.25, 1.35];
 	game.rocket.costMultInc = [0.025, 0.03, 0.1, 0.1];
 	game.rocket.coolDown = new Decimal(5).plus(game.rocket.upgrade[2]);
-	if (game.rocket.upgrade[2] == 15) game.rocket.costMultInc[2] = 0.2;
+	if (game.rocket.upgrade[2] >= 15) game.rocket.costMultInc[2] = 0.3;
 }
 //Get the neta gain. Also the first time I use a while loop in a long time.
 function getNetaGain() {
@@ -136,6 +137,7 @@ function initUpgrades() {
 	initFuel();
 	initExchangeRate();
 	initMaxHeight();
+	initOthers();
 }
 //Initialize speed
 function initSpeed() {
@@ -151,9 +153,43 @@ function initFuel() {
 //Init Exchange Rate
 function initExchangeRate() {
 	//Multipliers
+	var up1Pow = new Decimal(1.3)
+	if (error.alphaUpgrades.includes("B2")) up1Pow = up1Pow.plus(Decimal.mul(0.005, game.rocket.launched));
 	game.rocket.exchangeRate = Decimal.add(250, Decimal.mul(75, game.rocket.upgrade[0]));
-	game.rocket.exchangeRate = game.rocket.exchangeRate.times(Decimal.pow(1.3, game.rocket.upgrade[0]));
+	game.rocket.exchangeRate = game.rocket.exchangeRate.times(Decimal.pow(up1Pow, game.rocket.upgrade[0]));
 	if (game.rocket.maxFuel.gte(100)) game.rocket.exchangeRate = game.rocket.exchangeRate.times(10);
+	game.rocket.exchangeRate = game.rocket.exchangeRate.times(Decimal.pow(3, game.alpha.repeatUps[0]));
+	if (game.rocket.heightMax.lte(getHeight())) game.rocket.exchangeRate = game.rocket.exchangeRate.times(Decimal.pow(3, game.alpha.repeatUps[1]));
+	if (getHeight().gte(2)) game.rocket.exchangeRate = game.rocket.exchangeRate.times(getHeight().sub(2).times(10).pow(2).plus(1));
+	if (getHeight().gte(4)) game.rocket.exchangeRate = game.rocket.exchangeRate.times(getHeight().sub(4).times(10).pow(2).plus(1));
+	if (error.alphaUpgrades.includes("B1")) game.rocket.exchangeRate = game.rocket.exchangeRate.times(getAlphaUpgradeEffect("B", 1, 0));
+	if (error.alphaUpgrades.includes("B1")) game.rocket.exchangeRate = game.rocket.exchangeRate.times(getAlphaUpgradeEffect("B", 1, 1));
+	if (error.alphaUpgrades.includes("B3")) game.rocket.exchangeRate = game.rocket.exchangeRate.times(getAlphaUpgradeEffect("B", 3, 0));
+	var up7Pow = new Decimal(0);
+	up7Pow = Decimal.mul(-5, new Decimal(game.alpha.repeatUps[3]).plus(1).pow(-1/3)).plus(5);
+	if (game.alpha.shards.gte(1)) game.rocket.exchangeRate = game.rocket.exchangeRate.times(game.alpha.shards.pow(up7Pow));
+}
+function breakdnExchangeRate() {
+	var desc;
+	var up1Pow = new Decimal(1.3)
+	if (error.alphaUpgrades.includes("B2")) up1Pow = up1Pow.plus(Decimal.mul(0.005, game.rocket.launched));
+	desc = "Exchange Rate Breakdown<br>";
+	desc += "Base Rate: 250<br>";
+	desc += "Upgrade 1: +" + scientific.format(Decimal.mul(75, game.rocket.upgrade[0]),2,2) + "<br>";
+	desc += "Upgrade 1: x" + scientific.format(Decimal.pow(up1Pow, game.rocket.upgrade[0]), 2, 2) + "<br>";
+	if (game.rocket.maxFuel.gte(100)) desc += "100+ Fuel boost: x10<br>"
+	if (game.alpha.repeatUps[0] > 0) desc += "Alpha upgrade 1: x" + scientific.format(Decimal.pow(3, game.alpha.repeatUps[0]),2,2) + "<br>"
+	if (game.alpha.repeatUps[1] > 0 && game.rocket.heightMax.lte(getHeight())) desc += "Alpha upgrade 2: x" + scientific.format(Decimal.pow(3, game.alpha.repeatUps[1]),2,2) + "<br>"
+	var up7Pow = new Decimal(0);
+	up7Pow = Decimal.mul(-5, new Decimal(game.alpha.repeatUps[3]).plus(1).pow(-1/3)).plus(5);
+	if (game.alpha.repeatUps[3] > 0 && game.alpha.shards.gte(1)) desc += "Alpha upgrade 4: x" + scientific.format(game.alpha.shards.pow(up7Pow),2,2) + "<br>"
+	if (getHeight().gte(2)) desc += ">2 km Height bonus: x" + scientific.format(getHeight().sub(2).times(10).pow(2).plus(1),2,2) + "<br>"
+	if (getHeight().gte(4)) desc += ">4 km Height bonus: x" + scientific.format(getHeight().sub(4).times(10).pow(2).plus(1),2,2) + "<br>"
+	if (error.alphaUpgrades.includes("B1")) desc += "B1 launch bonus: x" + scientific.format(getAlphaUpgradeEffect("B", 1, 0),2,2) + "<br>"
+	if (error.alphaUpgrades.includes("B1")) desc += "B1 time bonus: x" + scientific.format(getAlphaUpgradeEffect("B", 1, 1),2,2) + "<br>"
+	if (error.alphaUpgrades.includes("B3")) desc += "B3 bonus: x" + scientific.format(getAlphaUpgradeEffect("B", 3, 0),2,2)+"<br>";
+	desc += "Total exchange rate: "+scientific.format(game.rocket.exchangeRate,2,2);
+	ge("exchangeBreakdown").innerHTML = desc;
 }
 //Init Height Exponent
 function initMaxHeight() {
@@ -163,7 +199,14 @@ function initMaxHeight() {
 function getConsumption() {
 	return Decimal.mul(0.1, Decimal.pow(0.95, game.alpha.repeatUps[2]));
 }
-
+//Init any other vars 
+function initOthers() {
+	game.alpha.launchMult = new Decimal(1);
+	if (error.alphaUpgrades.includes("B2")) game.alpha.launchMult = game.alpha.launchMult.plus(1);
+	if (error.alphaUpgrades.includes("B3")) game.alpha.launchMult = game.alpha.launchMult.plus(3);
+	if (error.alphaUpgrades.includes("B1")) game.alpha.launchMult = game.alpha.launchMult.times(2);
+	
+}
 
 //Saving, loading, and exporting. I stole some code from Superspruce for this.
 function objectToDecimal(object) {
@@ -203,6 +246,7 @@ function isDecimal(x) {
 var savegame;
 function save() {
   localStorage.setItem("cosmicI", JSON.stringify(game));
+  localStorage.cosmicError = btoa(JSON.stringify(error));
 }
 function load() {
 	if (localStorage.getItem("cosmicI")) {
@@ -211,6 +255,8 @@ function load() {
     merge(game, savegame);
 
   }
+  if (!localStorage.cosmicError) return;
+  error = JSON.parse(atob(localStorage.cosmicError));
 }
 function wipeSave() {
   hardReset();
@@ -226,21 +272,39 @@ game = {
 		maxFuel: new Decimal(25),
 		speed: new Decimal(0.001),
 		exchangeRate: new Decimal(1000),
-		coolDown: new Decimal(2),
+		coolDown: new Decimal(4),
 		cdActive: false,
 		upgrade: [0,0,0,0],
 		cost: [new Decimal(50),new Decimal(50),new Decimal(50),new Decimal(50)],
-		costMult: [1.15, 1.2, 1.05, 1.1],
-		costMultInc: [0.02, 0.03, 0.1, 0.05],
+		costMult: [1.35, 1.2, 1.3, 1.2],
+		costMultInc: [0.05, 0.05, 0.1, 0.05],
 		heightMax: new Decimal(1),
+		launched: new Decimal(0),
+		time: new Decimal(0),
 	},
 	alpha:{
 		resets:0,
 		shards: new Decimal(0),
-		totalShards: new Decimal(0),
 		alphonium: new Decimal(0),
 		totalAlphonium: new Decimal(0),
 		upgrades:[],
+		repeatUps:[0, 0, 0, 0],
+		cost:[new Decimal(10), new Decimal(10), new Decimal(10), new Decimal(10)],
+		costMult:[3, 3, 5, 10],
+		launchMult: new Decimal(1),
+		time: new Decimal(0),
+		boostMac:{
+			
+		},
+		challenges: {
+			
+			
+		},
+		assistants: {
+			
+			
+			
+		},
 	},
 	totalMoney:new Decimal(0),
 	
@@ -254,15 +318,35 @@ function xport() {
 	tempInput.select();
 	document.execCommand("copy"); 
 	document.body.removeChild(tempInput); 
-	alert("Save copied to clipboard"); 
+	alert("Save copied to clipboard. Your Alpha upgrades will not utilize this save without breaking the game, so use the other buttons for that."); 
+}
+function xportAlpha() {
+	var tempInput = document.createElement("input");
+	tempInput.style = "position: absolute; left: -1000px; top: -1000px";
+	tempInput.value = btoa(JSON.stringify(error));
+	document.body.appendChild(tempInput);
+	tempInput.select();
+	document.execCommand("copy"); 
+	document.body.removeChild(tempInput); 
+	alert("Alpha preset copied to clipboard. Store this alongside your main save.");
 }
 function mport() {
+	hardReset();
 	var imp = prompt("Enter save file here");
 	if(imp==null) alert("That's not a valid save file.");
 	savegame = JSON.parse(atob(imp));
 	objectToDecimal(savegame)
 	merge(game, savegame);
 	save();
+}
+function mportAlpha() {
+	error = {
+		alphaUpgrades:[]
+	}
+	var imp = prompt("Enter Alpha preset here");
+	if(imp==null) alert("That's not a valid preset.");
+	savegame = JSON.parse(atob(imp));
+	error = savegame;
 }
 load();
 window.setInterval(function() {save()}, 10000);
@@ -284,6 +368,14 @@ window.setInterval(function() {
 		//Amount of upgrades bought
 		ge("upgrade"+i+"Count").innerHTML = game.rocket.upgrade[i];
 	}
+	for (var i = 4; i < 8; i++) {
+		if (game.alpha.shards.gte(getUpgradeCost(i)) && game.rocket.active == false) ge("upgrade" + i).className = "alphaUpYes";
+		else ge("upgrade"+i).className = "upgradeNo";
+		game.alpha.cost[i-4] = getUpgradeCost(i);
+		ge("upgrade"+i+"Cost").innerHTML = scientific.format(game.alpha.cost[i-4],2,2);
+		
+		
+	}
 	updateCostMults();
 	//Displaying current money.
 	ge("money").innerHTML = scientific.format(game.money, 3, 3);
@@ -292,14 +384,17 @@ window.setInterval(function() {
 	ge("maxFuel").innerHTML = scientific.format(game.rocket.maxFuel, 3, 3);
 	ge("height").innerHTML = scientific.format(getHeight(), 3, 3);
 	ge("maxHeight").innerHTML = scientific.format(game.rocket.heightMax, 3, 3);
-	ge("speed").innerHTML = "Speed: "+scientific.format(game.rocket.speed, 3, 3)+" km/s.<br>"
+	ge("speed").innerHTML = "Base Speed: "+scientific.format(game.rocket.speed, 3, 3)+" km/s.<br>"
 	ge("exchangeRate").innerHTML = "Exchange rate: "+scientific.format(game.rocket.exchangeRate, 3, 3)+" ƞ/s/km.<br>"
+	if(game.rocket.fuel.gte(game.rocket.maxFuel)) game.rocket.fuel = game.rocket.maxFuel;
+	//Stat breakdowns, inspired by 4G
+	breakdnExchangeRate();
 	//Time increases over time, obviously.
 	game.rocket.time = game.rocket.time.plus(1/30);
 	
 	//Showing stuff post- and during Alphatic resets.
-	if (game.money.lt("1e10")) {
-		ge("alphaResetButton").innerHTML = "Get to 1e10 ƞeta to perform an αlpha reset."
+	if (game.money.lt(Decimal.max(1e10, game.alpha.shards.pow(10)))) {
+		ge("alphaResetButton").innerHTML = "Get to " + scientific.format(Decimal.max(1e10, game.alpha.shards.pow(10)),2,2)+" ƞeta to perform an αlpha reset."
 	} else ge("alphaResetButton").innerHTML = "Reset your ƞeta, level, and rocket and gain " + scientific.format(getAlphaGain(),2 ,2) + " αlphonium shards";
 	if (game.alpha.resets > 0) {
 		ge("alphaDisplay").style.display = "";
@@ -307,9 +402,36 @@ window.setInterval(function() {
 		ge("alphonium").innerHTML = scientific.format(game.alpha.alphonium, 2, 2)
 				ge("alphoniumConversion").style.display = "";
 		if (game.alpha.shards.gte(getSmeltingCost())) {
-			ge("alphoniumConversion").className = "alphaMiniUpYes";
+			ge("alphoniumConversion").className = "alphaUpYes";
 		} else ge("alphoniumConversion").className = "upgradeNo";
 		ge("alphoniumCost").innerHTML = scientific.format(getSmeltingCost(), 2, 2);
+	}
+	for (var i = 4; i < 7; i++) {
+		alphaUpgradeView("A", i)
+	}
+	for (var i = 1; i < 8; i++) {
+		alphaUpgradeView("B", i)
+	}
+	for (var i = 4; i < 7; i++) {
+		alphaUpgradeView("C", i)
+	}
+	for (var i = 4; i < 7; i++) {
+		alphaUpgradeView("D", i)
+	}
+	for (var i = 1; i < 9; i++) {
+		alphaUpgradeView("E", i)
+	}
+	for (var i = 4; i < 7; i++) {
+		alphaUpgradeView("F", i)
+	}
+	for (var i = 4; i < 7; i++) {
+		alphaUpgradeView("G", i)
+	}
+	for (var i = 1; i < 8; i++) {
+		alphaUpgradeView("H", i)
+	}
+	for (var i = 4; i < 7; i++) {
+		alphaUpgradeView("I", i)
 	}
 	
 }, 33);

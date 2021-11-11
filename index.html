@@ -10,14 +10,12 @@
 	<head class="header">
 	
 	<h2>ƞ<span id="money">0</span></h2>
-	<h2 id="alphaDisplay" style="display:none">α<span id="alphaShards">0</span>(+<span id="alphonium">0</span>)</h2>
+	<h2 id="alphaDisplay" style="display:none">αs<span id="alphaShards">0</span>, α<span id="alphonium">0</span></h2>
 	</head>
-		
-	<span id="tabButtons"><button onclick="tab('mainUI')"id="mainUIButton" class="mainColors">ƞ</button>
-	<button id="alphaticButton" class="alphaTab" onclick="tab('alphatic')">α</button>
-	<button id="betonicButton" class="beta" onclick="tab('betonic')">β</button>
-	<button id="settingButton" class="mainColors" id="settingsButton" onclick="tab('settings')">s</button><br>
-		
+	<span id="tabButtons"><button onclick="tab('mainUI')"id="mainUIButton" class="mainColors"><h2>ƞeta</h2></button>
+	<button id="alphaticButton" class="alphaTab" onclick="tab('alphatic')"><h2>Augment</h2></button>
+	<button id="betonicButton" class="beta" onclick="tab('betonic')"><h2>Expansion</h2></button>
+	<button id="settingButton" class="mainColors" id="settingsButton" onclick="tab('settings')"><h2>settings</h2></button><br></span>
 		<span id="mainUI" class="tab">
 		<br>
 		<button class="launchButton" onclick="rocketLaunch();"><h2>Launch Rocket</h2></button>
@@ -27,85 +25,121 @@
 		Fuel: <span id="fuel">100</span>/<span id="maxFuel">100</span><br>
 		Height: <span id="height">0</span> km/<span id="maxHeight">1</span> km.<br>
 		<span id="speed"></span>
-		Speed is decreased at certain heights.<br>
 		<span id="exchangeRate"></span>
+		Other helpful info is in the settings menu.<br>
+		Normal Upgrades:
 		<table id="upgrades"><tr><td>
 		<button id="upgrade0" class="upgradeNo" onclick="upgrade(0)">Increase Exchange Rate.<br> Bought: <span id="upgrade0Count">0</span><br>Cost: ƞ<span id="upgrade0Cost">50</span></button></td><td>
 		<button id="upgrade1" class="upgradeNo" onclick="upgrade(1)">Increase Speed.<br> Bought: <span id="upgrade1Count">0</span><br>Cost: ƞ<span id="upgrade1Cost">50 </span></button></td></tr><tr><td>
 		<button id="upgrade2" class="upgradeNo" onclick="upgrade(2)">Increase Max Fuel.<br> Bought: <span id="upgrade2Count">0</span><br>Cost: ƞ<span id="upgrade2Cost">50</span></button></td><td>
-		<button id="upgrade3" class="upgradeNo" onclick="upgrade(3)">Increase Max Height.<br> Bought: <span id="upgrade3Count">0</span><br>Cost: ƞ<span id="upgrade3Cost">50 </span></button></td></tr>
-		</table>
+		<button id="upgrade3" class="upgradeNo" onclick="upgrade(3)">Increase Max Height.<br> Bought: <span id="upgrade3Count">0</span><br>Cost: ƞ<span id="upgrade3Cost">50 </span></button></td></tr><tr><td>
+		<button id="upgrade4" class="upgradeNo" onclick="upgrade(4)">Locked! Buy g35 or b35 to unlock.</button></td><td>
+		<button id="upgrade5" class="upgradeNo" onclick="upgrade(5)">Locked! You need to unlock a feature first! </button></td></tr><tr><td>
+		<button id="upgrade6" class="upgradeNo" onclick="upgrade(6)">No upgrade, yet</button></td><td>
+		<button id="upgrade7" class="upgradeNo" onclick="upgrade(7)">No upgrade, yet</button></td></tr>
+		</table><br>
+		Grinder Upgrades:
+		<table id="gUpgrades"><tr><td>
+		<button id="upgrade8" class="upgradeNo" onclick="upgrade(8)">Locked! Buy g15 to unlock.</button></td><td>
+		<button id="upgrade9" class="upgradeNo" onclick="upgrade(9)">Locked! You need to unlock a feature first! </button></td></tr><tr><td>
+		<button id="upgrade10" class="upgradeNo" onclick="upgrade(10)">No upgrade, yet</button></td><td>
+		<button id="upgrade11" class="upgradeNo" onclick="upgrade(11)">No upgrade, yet</button></td></tr></table>
 		</center>
 		</span>
 		
 		
 		<span id="alphatic" class="tab">
-		<button class="alphaTab" onclick="alphaTab('alphaUpgrades')">u</button>
-		<button class="alphaTab" onclick="alphaTab('alphaAI')">i</button>
+
 		
 		
-			<span id="alphaUpgrades" class="alphaSubTab"><br>
-			<span style="font-size: 25px"> Alpha </span><br>
-			Because every incremental must have a prestige somewhere.<br>
-			<button id="alphaResetButton" class="alphaLarge" onclick="alphaReset()">Get to 1e10 ƞeta to perform an αlpha reset.</button><br>
-			<table id="alphaRepeat"><tr><td>
-			<button id="upgrade4" class="upgradeNo" onclick="upgrade(4)">Increase Exchange Rate. <br> Cost: α<span id="upgrade4Cost">10</span></button></td><td>
-			<button id="upgrade5" class="upgradeNo" onclick="upgrade(5)">Increase ER at Max Fuel.<br>Cost: α<span id="upgrade1Cost">10 </span></button></td></tr><tr><td>
-			<button id="upgrade6" class="upgradeNo" onclick="upgrade(6)">Decrease Fuel Consumption.<br>Cost: α<span id="upgrade2Cost">10</span></button></td><td>
-			<button id="upgrade7" class="upgradeNo" onclick="upgrade(7)">Increase Max Height.<br>Cost: α<span id="upgrade3Cost">10 </span></button></td></tr>
-			<button style="display:none" id="alphoniumConversion" class="upgradeNo" onclick="alphoniumPurchase()">Smelt αlphonium from shards. Cost: α<span id="alphoniumCost"></span></button>
-			</td></tr></table><br>
-			<span style="font-size: 18px">Alphonium Upgrades</span><br>
-			<table id="alphaTable">
 			
-			<tr><th></th><th>A</th><th>B</th><th>C</th><th>~</th><th>D</th><th>E</th><th>F</th><th>~</th><th>G</th><th>H</th><th>I</th><th>Cost</th></tr>
-			<tr><td>1</td>
-			<td></td><td><button onclick="getDescription('B', 1)" id="alphaB1" class="miniAlphaNo">B1</button></td><td></td><td></td>
-			<td></td><td><button id="alphaE1" class="miniAlphaNo">E1</button></td><td></td><td></td>
-			<td></td><td><button id="alphaH1" class="miniAlphaNo">H1</button></td><td></td><td>1</td></tr><tr>
-			<td>2</td>
-			<td></td><td><button id="alphaB2" class="miniAlphaNo">B2</button></td><td></td><td></td>
-			<td></td><td><button id="alphaE2" class="miniAlphaNo">E2</button></td><td></td><td></td>
-			<td></td><td><button id="alphaH2" class="miniAlphaNo">H2</button></td><td></td><td>1</td></tr><tr>
-			<td>3</td>
-			<td></td><td><button id="alphaB3" class="miniAlphaNo">B3</button></td><td></td><td></td>
-			<td></td><td><button id="alphaE3" class="miniAlphaNo">E3</button></td><td></td><td></td>
-			<td></td><td><button id="alphaH3" class="miniAlphaNo">H3</button></td><td></td><td>2</td></tr><tr>
-			<td>4</td>
-			<td><button id="alphaA4" class="miniAlphaNo">A4</td><td><button id="alphaB4" class="miniAlphaNo">B4</button></td><td><button id="alphaC4" class="miniAlphaNo">C4</button></td><td>~</td>
-			<td><button id="alphaD4" class="miniAlphaNo">D4</td><td><button id="alphaE4" class="miniAlphaNo">E4</button></td><td><button id="alphaF4" class="miniAlphaNo">F4</button></td><td>~</td>
-			<td><button id="alphaG4" class="miniAlphaNo">G4</td><td><button id="alphaH4" class="miniAlphaNo">H4</button></td><td><button id="alphaI4" class="miniAlphaNo">I4</button></td><td>3</td></tr><tr>
-			<td>5</td>
-			<td><button id="alphaA5" class="miniAlphaNo">A5</td><td><button id="alphaB5" class="miniAlphaNo">B5</button></td><td><button id="alphaC5" class="miniAlphaNo">C5</button></td><td>~</td>
-			<td><button id="alphaD5" class="miniAlphaNo">D5</td><td><button id="alphaE5" class="miniAlphaNo">E5</button></td><td><button id="alphaF5" class="miniAlphaNo">F5</button></td><td>~</td>
-			<td><button id="alphaG5" class="miniAlphaNo">G5</td><td><button id="alphaH5" class="miniAlphaNo">H5</button></td><td><button id="alphaI5" class="miniAlphaNo">I5</button></td><td>2</td></tr><tr>
-			<td>6</td>
-			<td><button id="alphaA6" class="miniAlphaNo">A6</td><td><button id="alphaB6" class="miniAlphaNo">B6</button></td><td><button id="alphaC6" class="miniAlphaNo">C6</button></td><td>~</td>
-			<td><button id="alphaD6" class="miniAlphaNo">D6</td><td><button id="alphaE6" class="miniAlphaNo">E6</button></td><td><button id="alphaF6" class="miniAlphaNo">F6</button></td><td>~</td>
-			<td><button id="alphaG6" class="miniAlphaNo">G6</td><td><button id="alphaH6" class="miniAlphaNo">H6</button></td><td><button id="alphaI6" class="miniAlphaNo">I6</button></td><td>2</td></tr><tr>
-			<td>7</td>
-			<td></td><td><button id="alphaB7" class="miniAlphaNo">B7</button></td><td></td><td></td>
-			<td></td><td><button id="alphaE7" class="miniAlphaNo">E7</button></td><td></td><td></td>
-			<td></td><td><button id="alphaH7" class="miniAlphaNo">H7</button></td><td></td><td>4</td></tr><tr>
-			<td>8</td>
-			<td></td><td></td><td></td><td></td>
-			<td></td><td><button id="alphaE8" class="miniAlphaNo">E8</button></td><td></td><td></td>
-			<td></td><td></td><td></td><td>10</td></tr><tr>
+			<span style="font-size: 25px"> Augments </span><br>
+			You didn't think I'd add a prestige this early, did you?<br>
+			<button id="alphaResetButton" class="alphaLarge" onclick="alphaReset()">Get to 1e10 ƞeta to unlock Tech Points.</button><br>
+			<span style="font-size: 18px">Alphonium Upgrades (Discontinued)</span><br>
 			
-			
-			
-			</table>
-			
-			<span id="alphaEffect">Click on an upgrade to see what it does!</span>
+			<button class="alphaTab" onclick="alphaTab('grinder')">grinder</button>
+			<button class="alphaTab" onclick="alphaTab('booster')">booster(WIP)</button>
+			<span id="grinder" class="alphaSubTab"><br>
+			<h3>Grinder Upgrades</h3>
+			<span id="grindEffect">
+			Upgrade ID is G+row+column<br>
+			Click on an upgrade the first time to see costs and effects.<br>
+			Click on the upgrade again to purchase it.<br>
+			More information is available in the help menu.<br>
 			</span>
+			<table id="grindTable">
+			<tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+			
+			<tr><td></td><td></td>
+			<td><button id="g13" class="miniAlphaNo">g13</button></td>
+			<td></td><td></td></tr>
+			
+			<tr><td></td><td><button id="g22" class="miniAlphaNo">g22</button></td>
+			<td><button id="g23" class="miniAlphaNo">g23</button></td>
+			<td><button id="g24" class="miniAlphaNo">g24</button></td><td></td></tr>
+			
+			<tr><td></td><td></td>
+			<td><button id="g33" class="miniAlphaNo">g33</button></td>
+			<td></td><td></td></tr>
+			
+			<tr><td></td><td></td>
+			<td><button class="again">g43</button></td>
+			<td></td><td></td></tr>
+			
+			</span>
+			
 
 		</span>
 		
 		
 		<span id="settings" class="tab">
-		<button id="save" class="upgradeYes" onclick="save()">Save the game</button><br>
-		<button id="export" class="upgradeYes" onclick="xport()">Export a save file</button><br>
-		<button id="import" class="upgradeYes" onclick="mport()">Import a save file</button><br>
+		<button class="setTabButt mainColors" onclick="setTab('options')">spaghettings</button>
+		<button class="setTabButt mainColors" onclick="setTab('breakdowns')">breakdowns</button>
+		<button class="setTabButt mainColors" onclick="setTab('help')">help</button>
+			<span id="options" class="setTab"><br>
+			<button id="save" class="upgradeYes" onclick="save()">Save the game</button><br>
+			<button id="export" class="upgradeYes" onclick="xport()">Export a save file</button>
+			<button id="import" class="upgradeYes" onclick="mport()">Import a save file</button><br>
+			</span>
+			<span id="breakdowns" class="setTab"><br>
+			<span id="exchangeBreakdown"> </span>
+			</span>
+			<span id="help" class="setTab"><br>
+			<h2>How to play</h2><br>
+			<h3>The rocket & Upgrades</h3><br>
+			<span width="300px">
+			The main mechanic in this game is the rocket, which you launch in order to gain Neta.<br>
+			As long as it has been launched, the rocket passively generates Neta. <br>
+			In the early game, the amount of neta is equal to the height of the rocket times the exchange rate.<br>
+			The rocket will continue to generate neta until it runs out of fuel.<br>
+			Once the rocket runs out of fuel, it will refuel at a rate proportional to it's maximum fuel.<br>
+			<br>
+			The rocket also has four upgrades.<br>
+			The first upgrade simply increases the exchange rate. At base, this is 1.3x per upgrade.<br>
+			The second rocket increases base speed. This is at base 1.12x per upgrade.<br>
+			Both of these upgrades also have an additive effect.<br>
+			The third upgrade increases the amount of fuel the rocket has, at +5 per upgrade.<br>
+			The fourth upgrade increases the maximum height the rocket can reach, at +0.1 km per upgrade.<br>
+			<br>
+			Some important things to know about height is that for every power of 2 your height reaches, it slows down significantly.<br>
+			However, after the first slowdown, height also gives a large multipler based on how far you are from the slowdown.<br>
+			<br>
+			<br>
+			<h3>Augments</h3>
+			<br>
+			Augments are unlocked after reaching 1e10 neta. These are one-time purchases which use Tech Points as currency.<br>
+			You unlock Tech Points by reaching new milestones of neta.
+			At the beginning, Tech Points can be spent on two different "trees" - the Grinder tree and the Booster tree.
+			The Grinder tree starts out weaker than the Booster tree, but grows in strength as you launch more.
+			The Booster tree mostly gives flat boosts to production, remaining at the same strength throughout.
+			Augments can also unlock additional upgrades, features, and more.
+			</span>
+			</span>
+			
+			</span>
+		
+		
 	</center>
 	<script>
 function tab(t) {
@@ -123,6 +157,14 @@ function alphaTab(t) {
 	}
 	document.getElementById(t).style.display = ""
 }
+function setTab(t) {
+	var classList = document.getElementsByClassName("setTab");
+	for(var i = 0; i < classList.length; i++) {
+		classList[i].style.display = "none"
+	}
+	document.getElementById(t).style.display = ""
+}
 alphaTab("alphaUpgrades")
+setTab("options")
 </script>
 </html>
